@@ -127,6 +127,11 @@ func main() {
 
 		wordsChannel <- line
 	}
+
+	close(wordsChannel)
+	producerGroup.Wait()
+	close(resultsChannel)
+	consumerGroup.Wait()
 }
 
 func resolveCNAME(name string) []dns.RR {
