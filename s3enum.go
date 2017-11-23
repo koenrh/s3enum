@@ -51,13 +51,13 @@ func CheckName(name string, word string, resultsChannel chan<- string) {
 	}
 
 	for _, candidate := range candidates {
-		rrresult := resolveCNAME(fmt.Sprintf("%s.%s.", candidate, s3host))
-		if len(rrresult) == 0 {
+		result := resolveCNAME(fmt.Sprintf("%s.%s.", candidate, s3host))
+		if len(result) == 0 {
 			// No results
 			continue
 		}
 
-		if v, ok := rrresult[0].(*dns.CNAME); ok {
+		if v, ok := result[0].(*dns.CNAME); ok {
 			if !strings.Contains(v.Target, "s3-directional") {
 				resultsChannel <- candidate
 			}
