@@ -77,7 +77,7 @@ func main() {
 	flag.IntVar(&threads, "t", 10, "number of threads")
 	flag.Parse()
 
-	wordsChannel := make(chan string, threads)
+	wordsChannel := make(chan string)
 	resultsChannel := make(chan string)
 
 	producerGroup := new(sync.WaitGroup)
