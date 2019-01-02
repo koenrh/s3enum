@@ -1,5 +1,7 @@
 # s3enum
 
+[![Build Status](https://travis-ci.com/koenrh/s3enum.svg?branch=master)](https://travis-ci.com/koenrh/s3enum)
+
 s3enum is a fast enumeration tool built to enumerate a target's Amazon S3 buckets.
 It helps security researchers, and penetration testers to collect bucket names
 for further inspection. This tool uses DNS instead of HTTP, which means it doesn't
