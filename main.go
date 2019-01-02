@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"github.com/docopt/docopt-go"
 	"os"
 )
 
@@ -14,11 +14,28 @@ var (
 )
 
 func main() {
-	flag.StringVar(&baseName, "n", "", "base name")
-	flag.StringVar(&preAndSuffixesFile, "p", "", "path to the prefixes file")
-	flag.StringVar(&wordListFile, "w", "", "path to the word list")
-	flag.IntVar(&threads, "t", 10, "number of threads")
-	flag.Parse()
+	usage := `s3enum
+
+Usage:
+  s3enum --wordlist wl.txt --suffixlist sl.txt [--threads 2] <name>
+  s3enum -h | --help
+  s3enum --version
+
+Options:
+  --wordlist <path>    Path to the word list.
+  --suffixlist <path>  Path to the word list.
+  --threads <threads>  Number of threads [default: 10].
+  -h --help            Show this screen.`
+
+	opts, err := docopt.ParseDoc(usage)
+	if err != nil {
+		panic(err)
+	}
+
+	baseName = opts["<name>"].(string)
+	preAndSuffixesFile = opts["--suffixlist"].(string)
+	wordListFile = opts["--wordlist"].(string)
+	threads, _ = opts.Int("--threads")
 
 	wordChannel := make(chan string)
 	wordDone := make(chan bool)
