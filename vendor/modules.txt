@@ -1,3 +1,5 @@
+# github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
+github.com/docopt/docopt-go
 # github.com/miekg/dns v1.1.1
 github.com/miekg/dns
 # golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
