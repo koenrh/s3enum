@@ -60,7 +60,7 @@ func (p *Producer) Produce(basename string, word string) {
 	}
 }
 
-// FindCandidates creates all candidate pairs
+// PrepareCandidateBucketNames creates all candidate pairs
 func (p *Producer) PrepareCandidateBucketNames(basename string, word string) []string {
 	result := []string{}
 
