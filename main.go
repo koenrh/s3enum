@@ -13,8 +13,8 @@ var (
 	preAndSuffixesFile string
 )
 
-func main() {
-	usage := `s3enum
+const version = "0.0.1"
+const usage = `s3enum
 
 Usage:
   s3enum --wordlist wl.txt --suffixlist sl.txt [--threads 2] <name>
@@ -27,9 +27,15 @@ Options:
   --threads <threads>  Number of threads [default: 10].
   -h --help            Show this screen.`
 
+func main() {
 	opts, err := docopt.ParseDoc(usage)
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, "Bad arguments")
+		os.Exit(1)
+	}
+	if opts["--version"].(bool) {
+		fmt.Println(version)
+		os.Exit(0)
 	}
 
 	baseName = opts["<name>"].(string)
