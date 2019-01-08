@@ -8,7 +8,7 @@ func TestProduceCandidateNamesToChannel(t *testing.T) {
 	channel := make(chan string)
 	done := make(chan bool)
 
-	producer, err := NewProducer("testdata/preandsuffixes.txt", channel, done)
+	producer, err := NewProducer("testdata/suffixlist.txt", channel, done)
 	if err != nil {
 		t.Errorf("could not initialize Producer")
 	}
@@ -60,7 +60,7 @@ func TestFindCandidates(t *testing.T) {
 	channel := make(chan string)
 	done := make(chan bool)
 
-	producer, err := NewProducer("testdata/preandsuffixes.txt", channel, done)
+	producer, err := NewProducer("testdata/suffixlist.txt", channel, done)
 	if err != nil {
 		t.Errorf("could not initialize Producer")
 	}

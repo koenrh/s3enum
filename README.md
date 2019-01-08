@@ -2,10 +2,10 @@
 
 [![Build Status](https://travis-ci.com/koenrh/s3enum.svg?branch=master)](https://travis-ci.com/koenrh/s3enum)
 
-s3enum is a fast enumeration tool built to enumerate a target's Amazon S3 buckets.
-It helps security researchers, and penetration testers to collect bucket names
-for further inspection. This tool uses DNS instead of HTTP, which means it doesn't
-hit Amazon's infrastructure (directly).
+s3enum is a tool to enumerate a target's Amazon S3 buckets. It is fast and leverages
+DNS instead of HTTP, which means that requests don't hit AWS directly.
+
+It was originally built back in 2016 to [target GitHub](https://koen.io/2016/02/13/github-bug-bounty-hunting/).
 
 ## Installation
 
@@ -21,8 +21,9 @@ You could either use the `words.txt` file from this repository, or get a word li
 you could specify the number of threads (defaults to 10).
 
 ```
-$ s3enum -w words.txt -n hackerone
+$ s3enum --wordlist examples/wordlist.txt --suffixlist examples/suffixlist.txt hackerone
 
+hackerone
 hackerone-attachment
 hackerone-attachments
 hackerone-static
