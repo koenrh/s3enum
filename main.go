@@ -8,7 +8,7 @@ import (
 
 var (
 	threads            int
-	baseName           string
+	names              []string
 	wordListFile       string
 	preAndSuffixesFile string
 )
@@ -17,7 +17,7 @@ const version = "0.0.1"
 const usage = `s3enum
 
 Usage:
-  s3enum --wordlist wl.txt --suffixlist sl.txt [--threads 2] <name>
+  s3enum --wordlist wl.txt --suffixlist sl.txt [--threads 2] <name>...
   s3enum -h | --help
   s3enum --version
 
@@ -38,7 +38,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	baseName = opts["<name>"].(string)
+	names = opts["<name>"].([]string)
 	preAndSuffixesFile = opts["--suffixlist"].(string)
 	wordListFile = opts["--wordlist"].(string)
 	threads, _ = opts.Int("--threads")
@@ -74,7 +74,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	producer.ProduceWordList(baseName, wordListFile)
+	producer.ProduceWordList(names, wordListFile)
 
 	// NOTE: producer closes their own channel
 	<-wordDone
