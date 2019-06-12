@@ -58,14 +58,14 @@ func (p *Producer) ProduceWordList(names []string, list string) {
 }
 
 // Produce produces candidates
-func (p *Producer) Produce(name string, word string) {
+func (p *Producer) Produce(name, word string) {
 	for _, ca := range p.PrepareCandidateBucketNames(name, word) {
 		p.channel <- ca
 	}
 }
 
 // PrepareCandidateBucketNames creates all candidate pairs
-func (p *Producer) PrepareCandidateBucketNames(name string, word string) []string {
+func (p *Producer) PrepareCandidateBucketNames(name, word string) []string {
 	result := []string{}
 
 	for _, del := range p.delimiters {
