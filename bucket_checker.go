@@ -12,6 +12,7 @@ type Resolver interface {
 	IsBucket(string) bool
 }
 
+// NewS3Resolver initializes a new S3Resolver
 func NewS3Resolver(ns string) (*S3Resolver, error) {
 	config, err := getConfig(ns)
 
