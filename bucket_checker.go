@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/miekg/dns"
+	"net"
 	"strings"
 )
 
@@ -11,14 +12,23 @@ type Resolver interface {
 	IsBucket(string) bool
 }
 
-func NewS3Resolver() *S3Resolver {
+// NewS3Resolver initializes a new S3Resolver
+func NewS3Resolver(ns string) (*S3Resolver, error) {
+	config, err := getConfig(ns)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &S3Resolver{
 		dnsClient: dns.Client{},
-	}
+		config:    *config,
+	}, nil
 }
 
 type S3Resolver struct {
 	dnsClient dns.Client
+	config    dns.ClientConfig
 }
 
 const s3host = "s3.amazonaws.com"
@@ -34,12 +44,34 @@ func (s *S3Resolver) IsBucket(name string) bool {
 	return false
 }
 
+func getConfig(nameserver string) (*dns.ClientConfig, error) {
+	if nameserver != "" {
+		addr := net.ParseIP(nameserver)
+		if addr != nil {
+			return &dns.ClientConfig{
+				Servers: []string{addr.String()},
+				Port:    "53",
+			}, nil
+		} else {
+			return nil, errors.New("invalid ip addr")
+		}
+	} else {
+		config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
+
+		if err != nil {
+			return nil, errors.New("could not read local resolver config")
+		}
+
+		return config, nil
+	}
+}
+
 func (s *S3Resolver) resolveCNAME(name string) (string, error) {
 	msg := dns.Msg{}
 	msg.SetQuestion(name, dns.TypeCNAME)
 
-	// TODO: Allow the name server to be set by the user.
-	r, _, err := s.dnsClient.Exchange(&msg, "8.8.8.8:53")
+	addr := net.JoinHostPort(s.config.Servers[0], s.config.Port)
+	r, _, err := s.dnsClient.Exchange(&msg, addr)
 
 	if err != nil {
 		return "", errors.New("probably a timeout")

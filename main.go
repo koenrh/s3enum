@@ -11,21 +11,23 @@ var (
 	names              []string
 	wordListFile       string
 	preAndSuffixesFile string
+	nameserver         string
 )
 
 const version = "0.0.1"
 const usage = `s3enum
 
 Usage:
-  s3enum --wordlist wl.txt --suffixlist sl.txt [--threads 2] <name>...
+  s3enum --wordlist wl.txt --suffixlist sl.txt [--threads 2] [--nameserver 1.1.1.1] <name>...
   s3enum -h | --help
   s3enum --version
 
 Options:
-  --wordlist <path>    Path to the word list.
-  --suffixlist <path>  Path to the word list.
-  --threads <threads>  Number of threads [default: 10].
-  -h --help            Show this screen.`
+  --wordlist <path>             Path to the word list.
+  --suffixlist <path>           Path to the word list.
+  --threads <threads>           Number of threads [default: 10].
+  -n --nameserver <nameserver>  Use specific nameserver.
+  -h --help                     Show this screen.`
 
 func main() {
 	opts, err := docopt.ParseDoc(usage)
@@ -43,13 +45,23 @@ func main() {
 	wordListFile = opts["--wordlist"].(string)
 	threads, _ = opts.Int("--threads")
 
+	if opts["--nameserver"] == nil {
+		nameserver = ""
+	} else {
+		nameserver = opts["--nameserver"].(string)
+	}
+
 	wordChannel := make(chan string)
 	wordDone := make(chan bool)
 
 	resultChannel := make(chan string)
 	resultDone := make(chan bool)
 
-	resolver := NewS3Resolver()
+	resolver, err := NewS3Resolver(nameserver)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not initialize DNS resolver: %v\n", err)
+		os.Exit(1)
+	}
 
 	consumer, err := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
 	if err != nil {
