@@ -33,8 +33,10 @@ func NewProducer(preAndSuffixesFile string, wordChannel chan string, quit chan b
 }
 
 // ProduceWordList produces candidate bucket names to the channel.
-func (p *Producer) ProduceWordList(basename string, list string) {
-	p.channel <- basename
+func (p *Producer) ProduceWordList(names []string, list string) {
+	for _, n := range names {
+		p.channel <- n
+	}
 
 	file, err := os.Open(list)
 	if err != nil {
@@ -47,26 +49,28 @@ func (p *Producer) ProduceWordList(basename string, list string) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		p.Produce(basename, line)
+		for _, n := range names {
+			p.Produce(n, line)
+		}
 	}
 
 	close(p.channel)
 }
 
 // Produce produces candidates
-func (p *Producer) Produce(basename string, word string) {
-	for _, ca := range p.PrepareCandidateBucketNames(basename, word) {
+func (p *Producer) Produce(name, word string) {
+	for _, ca := range p.PrepareCandidateBucketNames(name, word) {
 		p.channel <- ca
 	}
 }
 
 // PrepareCandidateBucketNames creates all candidate pairs
-func (p *Producer) PrepareCandidateBucketNames(basename string, word string) []string {
+func (p *Producer) PrepareCandidateBucketNames(name, word string) []string {
 	result := []string{}
 
 	for _, del := range p.delimiters {
-		cand1 := fmt.Sprintf("%s%s%s", basename, del, word)
-		cand2 := fmt.Sprintf("%s%s%s", word, del, basename)
+		cand1 := fmt.Sprintf("%s%s%s", name, del, word)
+		cand2 := fmt.Sprintf("%s%s%s", word, del, name)
 
 		result = append(result, cand1)
 		result = append(result, cand2)
