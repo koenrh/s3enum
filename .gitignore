@@ -1,2 +1,2 @@
-s3enum
-*.txt
+/s3enum
+/vendor
