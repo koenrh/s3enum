@@ -16,7 +16,7 @@ go get -u github.com/koenrh/s3enum
 ## Usage
 
 You need to specify the base name of the target (e.g. `hackerone`), and a word list.
-You could either use the example [`wordlist.txt`](examples/wordlist) file from
+You could either use the example [`wordlist.txt`](examples/wordlist.txt) file from
 this repository, or get a word list [elsewhere](https://github.com/bitquark/dnspop/tree/master/results).
 Optionally, you could specify the number of threads (defaults to 10).
 
