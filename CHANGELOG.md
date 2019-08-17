@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Migrated CI from Travis CI to GitHub Actions
+- Migrated CI from Travis CI to GitHub Actions [\#27](https://github.com/koenrh/s3enum/pull/27)
+- Added GolangCI-Lint [\#28](https://github.com/koenrh/s3enum/pull/28)
 
 ## v0.1.0
 
