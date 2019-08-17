@@ -1,0 +1,29 @@
+---
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # TODO: Replace with 1.[minor].x when https://git.io/fjdAK is resolved
+        go_version: [1.11.13, 1.12.8]
+
+    name: Go ${{ matrix.go_version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go_version }}
+        id: go
+
+      - uses: actions/checkout@v1
+
+      - name: Download Go modules
+        run: go mod download
+        env:
+          GOPROXY: https://proxy.golang.org
+
+      - name: Run tests
+        run: go test -mod readonly -race
