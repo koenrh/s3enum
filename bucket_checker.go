@@ -52,9 +52,10 @@ func getConfig(nameserver string) (*dns.ClientConfig, error) {
 				Servers: []string{addr.String()},
 				Port:    "53",
 			}, nil
-		} else {
-			return nil, errors.New("invalid ip addr")
 		}
+
+		return nil, errors.New("invalid ip addr")
+
 	} else {
 		config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
 
