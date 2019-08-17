@@ -55,16 +55,15 @@ func getConfig(nameserver string) (*dns.ClientConfig, error) {
 		}
 
 		return nil, errors.New("invalid ip addr")
-
-	} else {
-		config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
-
-		if err != nil {
-			return nil, errors.New("could not read local resolver config")
-		}
-
-		return config, nil
 	}
+
+	config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
+
+	if err != nil {
+		return nil, errors.New("could not read local resolver config")
+	}
+
+	return config, nil
 }
 
 func (s *S3Resolver) resolveCNAME(name string) (string, error) {
