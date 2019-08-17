@@ -33,7 +33,7 @@ type S3Resolver struct {
 
 const s3host = "s3.amazonaws.com"
 
-// IsBucket determines wheter this prefix is a valid S3 bucket name.
+// IsBucket determines whether this prefix is a valid S3 bucket name.
 func (s *S3Resolver) IsBucket(name string) bool {
 	result, err := s.resolveCNAME(fmt.Sprintf("%s.%s.", name, s3host))
 
