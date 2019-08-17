@@ -62,7 +62,7 @@ func main() {
 		go consumer.Consume()
 	}
 
-	printer := NewPrinter(resultChannel, resultDone)
+	printer := NewPrinter(resultChannel, resultDone, os.Stdout)
 	go printer.PrintBuckets()
 
 	producer, err := NewProducer(preAndSuffixesFile, wordChannel, resultDone)

@@ -3,24 +3,21 @@ package main
 import (
 	"fmt"
 	"io"
-	"os"
-)
-
-var (
-	out io.Writer = os.Stdout // substituted during testing
 )
 
 // Printer struct
 type Printer struct {
 	channel chan string
 	done    chan bool
+	out     io.Writer
 }
 
 // NewPrinter initializer
-func NewPrinter(channel chan string, done chan bool) *Printer {
+func NewPrinter(channel chan string, done chan bool, out io.Writer) *Printer {
 	printer := &Printer{
 		channel: channel,
 		done:    done,
+		out:     out,
 	}
 
 	return printer
@@ -31,7 +28,7 @@ func (c *Printer) PrintBuckets() {
 	for {
 		bucket, more := <-c.channel
 		if more {
-			fmt.Fprintf(out, "%s\n", bucket)
+			fmt.Fprintf(c.out, "%s\n", bucket)
 		} else {
 			c.done <- true
 			return

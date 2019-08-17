@@ -10,11 +10,10 @@ func TestPrintResults(t *testing.T) {
 	channel := make(chan string)
 	done := make(chan bool)
 
-	printer := NewPrinter(channel, done)
+	out := new(bytes.Buffer) // replace 'out' in order to capture the output
+	printer := NewPrinter(channel, done, out)
 
 	go printer.PrintBuckets()
-
-	out = new(bytes.Buffer) // replace 'out' in order to capture the output
 
 	// produce some test results to the results channel
 	for i := 1; i <= 5; i++ {
@@ -30,7 +29,7 @@ func TestPrintResults(t *testing.T) {
 		"test4\n" +
 		"test5\n"
 
-	got := out.(*bytes.Buffer).String()
+	got := printer.out.(*bytes.Buffer).String()
 	if got != expected {
 		t.Errorf("expected %q, got %q", expected, got)
 	}
