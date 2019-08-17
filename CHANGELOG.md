@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Migrated CI from Travis CI to GitHub Actions
+
 ## v0.1.0
 
 - Added support for multple name arguments [\#20](https://github.com/koenrh/s3enum/pull/20)
