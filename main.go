@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/docopt/docopt-go"
 	"os"
+
+	"github.com/docopt/docopt-go"
 )
 
 const version = "0.0.1"

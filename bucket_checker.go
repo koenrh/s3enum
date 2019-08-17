@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/miekg/dns"
 	"net"
 	"strings"
+
+	"github.com/miekg/dns"
 )
 
 type Resolver interface {
