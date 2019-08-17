@@ -6,14 +6,6 @@ import (
 	"os"
 )
 
-var (
-	threads            int
-	names              []string
-	wordListFile       string
-	preAndSuffixesFile string
-	nameserver         string
-)
-
 const version = "0.0.1"
 const usage = `s3enum
 
@@ -40,11 +32,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	names = opts["<name>"].([]string)
-	preAndSuffixesFile = opts["--suffixlist"].(string)
-	wordListFile = opts["--wordlist"].(string)
-	threads, _ = opts.Int("--threads")
+	names := opts["<name>"].([]string)
+	preAndSuffixesFile := opts["--suffixlist"].(string)
+	wordListFile := opts["--wordlist"].(string)
+	threads, _ := opts.Int("--threads")
 
+	var nameserver string
 	if opts["--nameserver"] == nil {
 		nameserver = ""
 	} else {
