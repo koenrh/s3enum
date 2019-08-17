@@ -1,7 +1,5 @@
 # s3enum
 
-[![Build Status](https://travis-ci.com/koenrh/s3enum.svg?branch=master)](https://travis-ci.com/koenrh/s3enum)
-
 s3enum is a tool to enumerate a target's Amazon S3 buckets. It is fast and leverages
 DNS instead of HTTP, which means that requests don't hit AWS directly.
 
