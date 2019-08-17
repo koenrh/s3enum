@@ -24,10 +24,7 @@ func TestConsume(t *testing.T) {
 	done3 := make(chan bool)
 
 	resolver := NewTestResolver()
-	consumer, err := NewConsumer(resolver, inputChannel, resultChannel, done2)
-	if err != nil {
-		t.Errorf("fail!")
-	}
+	consumer := NewConsumer(resolver, inputChannel, resultChannel, done2)
 
 	go consumer.Consume()
 

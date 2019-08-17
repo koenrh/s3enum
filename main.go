@@ -57,21 +57,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	consumer, err := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize Consumer: %v\n", err)
-		os.Exit(1)
-	}
-
+	consumer := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
 	for i := 0; i < threads; i++ {
 		go consumer.Consume()
 	}
 
-	printer, err := NewPrinter(resultChannel, resultDone)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize Printer: %v\n", err)
-		os.Exit(1)
-	}
+	printer := NewPrinter(resultChannel, resultDone)
 	go printer.PrintBuckets()
 
 	producer, err := NewProducer(preAndSuffixesFile, wordChannel, resultDone)

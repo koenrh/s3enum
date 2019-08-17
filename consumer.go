@@ -9,7 +9,7 @@ type Consumer struct {
 }
 
 // NewConsumer initializer
-func NewConsumer(resolver Resolver, input chan string, result chan string, quit chan bool) (*Consumer, error) {
+func NewConsumer(resolver Resolver, input chan string, result chan string, quit chan bool) *Consumer {
 	consumer := &Consumer{
 		resolver:      resolver,
 		inputChannel:  input,
@@ -17,7 +17,7 @@ func NewConsumer(resolver Resolver, input chan string, result chan string, quit 
 		quit:          quit,
 	}
 
-	return consumer, nil
+	return consumer
 }
 
 // Consume reads messages from 'input', and outputs results to 'result'.

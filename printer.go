@@ -17,13 +17,13 @@ type Printer struct {
 }
 
 // NewPrinter initializer
-func NewPrinter(channel chan string, done chan bool) (*Printer, error) {
+func NewPrinter(channel chan string, done chan bool) *Printer {
 	printer := &Printer{
 		channel: channel,
 		done:    done,
 	}
 
-	return printer, nil
+	return printer
 }
 
 // PrintBuckets prints the results as they come in.
