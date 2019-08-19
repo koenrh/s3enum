@@ -24,5 +24,13 @@ jobs:
         env:
           GOPROXY: https://proxy.golang.org
 
+      - name: Run linter
+        uses: docker://golangci/golangci-lint
+        env:
+          GOROOT: /usr/local/go
+        with:
+          entrypoint: golangci-lint
+          args: run --enable-all -D lll -D errcheck
+
       - name: Run tests
         run: go test -mod readonly -race

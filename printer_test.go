@@ -10,14 +10,10 @@ func TestPrintResults(t *testing.T) {
 	channel := make(chan string)
 	done := make(chan bool)
 
-	printer, err := NewPrinter(channel, done)
-	if err != nil {
-		t.Errorf("failed to initialize the Printer")
-	}
+	log := new(bytes.Buffer)
+	printer := NewPrinter(channel, done, log)
 
 	go printer.PrintBuckets()
-
-	out = new(bytes.Buffer) // replace 'out' in order to capture the output
 
 	// produce some test results to the results channel
 	for i := 1; i <= 5; i++ {
@@ -33,7 +29,7 @@ func TestPrintResults(t *testing.T) {
 		"test4\n" +
 		"test5\n"
 
-	got := out.(*bytes.Buffer).String()
+	got := printer.log.(*bytes.Buffer).String()
 	if got != expected {
 		t.Errorf("expected %q, got %q", expected, got)
 	}

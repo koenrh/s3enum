@@ -2,16 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/docopt/docopt-go"
 	"os"
-)
 
-var (
-	threads            int
-	names              []string
-	wordListFile       string
-	preAndSuffixesFile string
-	nameserver         string
+	"github.com/docopt/docopt-go"
 )
 
 const version = "0.0.1"
@@ -40,11 +33,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	names = opts["<name>"].([]string)
-	preAndSuffixesFile = opts["--suffixlist"].(string)
-	wordListFile = opts["--wordlist"].(string)
-	threads, _ = opts.Int("--threads")
+	names := opts["<name>"].([]string)
+	preAndSuffixesFile := opts["--suffixlist"].(string)
+	wordListFile := opts["--wordlist"].(string)
+	threads, _ := opts.Int("--threads")
 
+	var nameserver string
 	if opts["--nameserver"] == nil {
 		nameserver = ""
 	} else {
@@ -63,21 +57,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	consumer, err := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize Consumer: %v\n", err)
-		os.Exit(1)
-	}
-
+	consumer := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
 	for i := 0; i < threads; i++ {
 		go consumer.Consume()
 	}
 
-	printer, err := NewPrinter(resultChannel, resultDone)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize Printer: %v\n", err)
-		os.Exit(1)
-	}
+	printer := NewPrinter(resultChannel, resultDone, os.Stdout)
 	go printer.PrintBuckets()
 
 	producer, err := NewProducer(preAndSuffixesFile, wordChannel, resultDone)

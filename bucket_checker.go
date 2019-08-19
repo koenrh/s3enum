@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/miekg/dns"
 	"net"
 	"strings"
+
+	"github.com/miekg/dns"
 )
 
 type Resolver interface {
@@ -33,7 +34,7 @@ type S3Resolver struct {
 
 const s3host = "s3.amazonaws.com"
 
-// IsBucket determines wheter this prefix is a valid S3 bucket name.
+// IsBucket determines whether this prefix is a valid S3 bucket name.
 func (s *S3Resolver) IsBucket(name string) bool {
 	result, err := s.resolveCNAME(fmt.Sprintf("%s.%s.", name, s3host))
 
@@ -52,18 +53,18 @@ func getConfig(nameserver string) (*dns.ClientConfig, error) {
 				Servers: []string{addr.String()},
 				Port:    "53",
 			}, nil
-		} else {
-			return nil, errors.New("invalid ip addr")
-		}
-	} else {
-		config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
-
-		if err != nil {
-			return nil, errors.New("could not read local resolver config")
 		}
 
-		return config, nil
+		return nil, errors.New("invalid ip addr")
 	}
+
+	config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
+
+	if err != nil {
+		return nil, errors.New("could not read local resolver config")
+	}
+
+	return config, nil
 }
 
 func (s *S3Resolver) resolveCNAME(name string) (string, error) {
