@@ -10,8 +10,8 @@ func TestPrintResults(t *testing.T) {
 	channel := make(chan string)
 	done := make(chan bool)
 
-	out := new(bytes.Buffer) // replace 'out' in order to capture the output
-	printer := NewPrinter(channel, done, out)
+	log := new(bytes.Buffer)
+	printer := NewPrinter(channel, done, log)
 
 	go printer.PrintBuckets()
 
@@ -29,7 +29,7 @@ func TestPrintResults(t *testing.T) {
 		"test4\n" +
 		"test5\n"
 
-	got := printer.out.(*bytes.Buffer).String()
+	got := printer.log.(*bytes.Buffer).String()
 	if got != expected {
 		t.Errorf("expected %q, got %q", expected, got)
 	}

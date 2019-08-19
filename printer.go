@@ -9,15 +9,15 @@ import (
 type Printer struct {
 	channel chan string
 	done    chan bool
-	out     io.Writer
+	log     io.Writer
 }
 
 // NewPrinter initializer
-func NewPrinter(channel chan string, done chan bool, out io.Writer) *Printer {
+func NewPrinter(channel chan string, done chan bool, log io.Writer) *Printer {
 	printer := &Printer{
 		channel: channel,
 		done:    done,
-		out:     out,
+		log:     log,
 	}
 
 	return printer
@@ -28,7 +28,7 @@ func (c *Printer) PrintBuckets() {
 	for {
 		bucket, more := <-c.channel
 		if more {
-			fmt.Fprintf(c.out, "%s\n", bucket)
+			fmt.Fprintf(c.log, "%s\n", bucket)
 		} else {
 			c.done <- true
 			return
