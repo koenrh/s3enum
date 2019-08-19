@@ -7,8 +7,7 @@ jobs:
   build:
     strategy:
       matrix:
-        # TODO: Replace with 1.[minor].x when https://git.io/fjdAK is resolved
-        go_version: [1.11.13, 1.12.8]
+        go_version: [1.11.x, 1.12.x]
 
     name: Go ${{ matrix.go_version }}
     runs-on: ubuntu-latest
