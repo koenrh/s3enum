@@ -19,7 +19,7 @@ this repository, or get a word list [elsewhere](https://github.com/bitquark/dnsp
 Optionally, you could specify the number of threads (defaults to 10).
 
 ```
-$ s3enum --wordlist examples/wordlist.txt --suffixlist examples/suffixlist.txt hackerone
+$ s3enum --wordlist examples/wordlist.txt --suffixlist examples/suffixlist.txt --threads 10 hackerone
 
 hackerone
 hackerone-attachment
