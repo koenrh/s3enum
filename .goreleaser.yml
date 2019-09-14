@@ -20,6 +20,16 @@ archives:
       - README.md
       - CHANGELOG.md
 
+brew:
+  commit_author:
+    email: info@koenrouwhorst.nl
+    name: "Koen Rouwhorst"
+  description: "Fast Amazon S3 bucket enumeration tool for pentesters"
+  github:
+    name: homebrew-tools
+    owner: koenrh
+  name: s3enum
+
 checksum:
   name_template: "checksums.txt"
 
