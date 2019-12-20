@@ -83,6 +83,7 @@ func (s *S3Resolver) resolveCNAME(name string) (string, error) {
 	if len(answer) == 0 {
 		return "", errors.New("no resp")
 	}
+
 	var answ = answer[0].(*dns.CNAME).Target
 
 	return answ, err
