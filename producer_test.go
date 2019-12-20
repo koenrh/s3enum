@@ -64,6 +64,7 @@ func TestFindCandidates(t *testing.T) {
 	if err != nil {
 		t.Errorf("could not initialize Producer")
 	}
+
 	producer.delimiters = []string{"."}
 
 	expected := []string{

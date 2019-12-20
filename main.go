@@ -28,6 +28,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Bad arguments")
 		os.Exit(1)
 	}
+
 	if opts["--version"].(bool) {
 		fmt.Println(version)
 		os.Exit(0)
@@ -58,6 +59,7 @@ func main() {
 	}
 
 	consumer := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
+
 	for i := 0; i < threads; i++ {
 		go consumer.Consume()
 	}
