@@ -1,10 +1,9 @@
-I have archived this project, because Amazon killed the DNS feature this tool used to enumerate S3 bucket names. For details, read [this GitHub issue](https://github.com/koenrh/s3enum/issues/45).
+I have archived this project, because Amazon killed the DNS feature this tool used
+to enumerate S3 bucket names. For details, read [this GitHub issue](https://github.com/koenrh/s3enum/issues/45).
 
 ---
 
 # s3enum
-
-![](https://github.com/koenrh/s3enum/workflows/build/badge.svg)
 
 s3enum is a tool to enumerate a target's Amazon S3 buckets. It is fast and leverages
 DNS instead of HTTP, which means that requests don't hit AWS directly.
