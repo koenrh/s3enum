@@ -75,7 +75,7 @@ func TestExistingBucket(t *testing.T) {
 	}
 	defer s.Shutdown()
 
-	resolver, err := NewS3Resolver(addrstr)
+	resolver, err := NewDNSResolver(addrstr)
 	isBucket := resolver.IsBucket("test")
 
 	if !isBucket {
@@ -94,7 +94,7 @@ func TestNonExistingBucket(t *testing.T) {
 	}
 	defer s.Shutdown()
 
-	resolver, err := NewS3Resolver(addrstr)
+	resolver, err := NewDNSResolver(addrstr)
 
 	isBucket := resolver.IsBucket("testnonexistingbucket")
 	if isBucket != false {
