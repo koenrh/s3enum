@@ -30,7 +30,7 @@ this repository, or get a word list [elsewhere](https://github.com/bitquark/dnsp
 Optionally, you could specify the number of threads (defaults to 10).
 
 ```
-$ s3enum --wordlist examples/wordlist.txt --suffixlist examples/suffixlist.txt --threads 10 hackerone
+$ s3enum -wordlist examples/wordlist.txt -suffixlist examples/suffixlist.txt -threads 10 hackerone
 
 hackerone
 hackerone-attachment
@@ -40,13 +40,13 @@ hackerone-upload
 ```
 
 By default `s3enum` will use the name server as specified in `/etc/resolv.conf`.
-Alternatively, you could specify a different name server using the `--nameserver`
+Alternatively, you could specify a different name server using the `-nameserver`
 option. Besides, you could test multiple names at the same time.
 
 ```
 s3enum \
-  --wordlist examples/wordlist.txt \
-  --suffixlist examples/suffixlist.txt \
-  --nameserver 1.1.1.1 \
+  -wordlist examples/wordlist.txt \
+  -suffixlist examples/suffixlist.txt \
+  -nameserver 1.1.1.1 \
   hackerone h1 roflcopter
 ```
