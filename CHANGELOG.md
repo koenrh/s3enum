@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Replaced the unmaintained [docopt](https://github.com/docopt/docopt.go) package
+  with the [flag](https://pkg.go.dev/flag) package from the standard library
+- Bumped [github.com/miekg/dns](https://github.com/miekg/dns) to v1.1.49
+- Updated the tool to use different heuristics to determine whether a bucket exists
+
 ## v0.2.0
 
 - Migrated CI from Travis CI to GitHub Actions [\#27](https://github.com/koenrh/s3enum/pull/27)
