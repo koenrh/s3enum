@@ -6,15 +6,21 @@ import (
 	"os"
 )
 
-const version = "0.0.1"
+const version = "0.2.0"
 
 func main() {
 	wordListPtr := flag.String("wordlist", "", "Path to word list")
 	suffixListPtr := flag.String("suffixlist", "", "Path to suffix list")
 	threadsPtr := flag.Int("threads", 5, "Number of threads")
 	nameServerPtr := flag.String("nameserver", "", "Custom name server")
+	versionPtr := flag.Bool("version", false, "Print version")
 
 	flag.Parse()
+
+	if *versionPtr {
+		fmt.Println("v" + version)
+		return
+	}
 
 	var names = flag.Args()
 
