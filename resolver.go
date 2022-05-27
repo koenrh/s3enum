@@ -15,23 +15,23 @@ type Resolver interface {
 	IsBucket(string) bool
 }
 
+type DNSResolver struct {
+	client dns.Client
+	config dns.ClientConfig
+}
+
 // NewS3Resolver initializes a new S3Resolver
-func NewS3Resolver(nsAddr string) (*S3Resolver, error) {
+func NewDNSResolver(nsAddr string) (*DNSResolver, error) {
 	config, err := getConfig(nsAddr)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &S3Resolver{
-		dnsClient: dns.Client{ReadTimeout: 3 * time.Second},
-		config:    *config,
+	return &DNSResolver{
+		client: dns.Client{ReadTimeout: 3 * time.Second},
+		config: *config,
 	}, nil
-}
-
-type S3Resolver struct {
-	dnsClient dns.Client
-	config    dns.ClientConfig
 }
 
 const (
@@ -41,7 +41,7 @@ const (
 )
 
 // IsBucket determines whether this prefix is a valid S3 bucket name.
-func (s *S3Resolver) IsBucket(name string) bool {
+func (s *DNSResolver) IsBucket(name string) bool {
 	records, err := s.resolveName(fmt.Sprintf("%s.%s", name, s3GlobalSuffix))
 
 	if err != nil {
@@ -62,7 +62,6 @@ func (s *S3Resolver) IsBucket(name string) bool {
 	return cname.Target != s31WSuffix
 }
 
-//func getConfig(nameserver string, port string) (*dns.ClientConfig, error) {
 func getConfig(nameserver string) (*dns.ClientConfig, error) {
 	if nameserver != "" {
 		h, p := parseHostAndPort(nameserver)
@@ -99,12 +98,12 @@ func parseHostAndPort(addr string) (host string, port int) {
 	return
 }
 
-func (s *S3Resolver) resolveName(name string) ([]dns.RR, error) {
+func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
 	msg := dns.Msg{}
 	msg.SetQuestion(name, dns.TypeCNAME)
 
 	addr := net.JoinHostPort(s.config.Servers[0], s.config.Port)
-	r, _, err := s.dnsClient.Exchange(&msg, addr)
+	r, _, err := s.client.Exchange(&msg, addr)
 
 	if err != nil {
 		return []dns.RR{}, errors.New("read timeout")

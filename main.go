@@ -36,7 +36,7 @@ func main() {
 	resultChannel := make(chan string)
 	resultDone := make(chan bool)
 
-	resolver, err := NewS3Resolver(*nameServerPtr)
+	resolver, err := NewDNSResolver(*nameServerPtr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not initialize DNS resolver: %v\n", err)
 		os.Exit(1)
