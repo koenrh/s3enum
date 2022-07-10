@@ -29,7 +29,7 @@ func NewDNSResolver(nsAddr string) (*DNSResolver, error) {
 	}
 
 	return &DNSResolver{
-		client: dns.Client{ReadTimeout: 3 * time.Second},
+		client: dns.Client{ReadTimeout: 2 * time.Second},
 		config: *config,
 	}, nil
 }
