@@ -101,16 +101,24 @@ func parseHostAndPort(addr string) (host string, port int) {
 func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
 	msg := dns.Msg{}
 	msg.SetQuestion(name, dns.TypeCNAME)
-
 	addr := net.JoinHostPort(s.config.Servers[0], s.config.Port)
-	r, _, err := s.client.Exchange(&msg, addr)
+	retries := 3
+	delay := 1 * time.Second
 
-	if err != nil {
-		return []dns.RR{}, errors.New("read timeout")
+	var err error
+	var r *dns.Msg
+	for attempt := 1; attempt <= retries; attempt++ {
+		r, _, err = s.client.Exchange(&msg, addr)
+		if err == nil {
+			break
+		}
+		if attempt != retries {
+			time.Sleep(1 * delay)
+			delay *= 2
+		}
 	}
 
 	var answer = r.Answer
-
 	if len(answer) == 0 {
 		return []dns.RR{}, errors.New("empty answer")
 	}
