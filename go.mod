@@ -1,6 +1,6 @@
 module github.com/koenrh/s3enum
 
-require github.com/miekg/dns v1.1.49
+require github.com/miekg/dns v1.1.50
 
 require (
 	golang.org/x/mod v0.4.2 // indirect
