@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v1.0.0
+
 - Replaced the unmaintained [docopt](https://github.com/docopt/docopt.go) package
   with the [flag](https://pkg.go.dev/flag) package from the standard library
 - Bumped [github.com/miekg/dns](https://github.com/miekg/dns) to v1.1.49
