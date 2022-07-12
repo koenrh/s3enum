@@ -25,7 +25,7 @@ func NewProducer(preAndSuffixesFile string, wordChannel chan string, quit chan b
 
 	contents, err := readFile(preAndSuffixesFile)
 	if err != nil {
-		return nil, errors.New("failed to read pre- and suffxies file")
+		return nil, errors.New("failed to read pre- and suffixes file")
 	}
 
 	producer.preAndSuffixes = contents
