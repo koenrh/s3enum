@@ -1,3 +1,5 @@
 /s3enum
 /vendor
 /dist
+
+dist/
