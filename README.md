@@ -7,14 +7,8 @@ It was originally built back in 2016 to [target GitHub](https://koen.io/2016/02/
 
 ## Installation
 
-### Binaries
-
-Find the binaries on the [Releases page](https://github.com/koenrh/s3enum/releases).
-
-### Go
-
 ```console
-go get github.com/koenrh/s3enum
+go install github.com/koenrh/s3enum@v1
 ```
 
 ## Usage
