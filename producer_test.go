@@ -1,41 +1,35 @@
 package main
 
 import (
+	"sync"
 	"testing"
 )
 
 func TestProduceCandidateNamesToChannel(t *testing.T) {
 	channel := make(chan string)
-	done := make(chan bool)
 
-	producer, err := NewProducer("testdata/suffixlist.txt", channel, done)
+	producer, err := NewProducer("testdata/suffixlist.txt", channel)
 	if err != nil {
-		t.Errorf("could not initialize Producer")
+		t.Fatalf("could not initialize Producer: %v", err)
 	}
 
 	producer.delimiters = []string{"-"}
 
 	var got []string
 
-	// consumer
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
-		for {
-			j, more := <-channel
-			if more {
-				got = append(got, j)
-			} else {
-				done <- true
-				return
-			}
+		defer wg.Done()
+		for j := range channel {
+			got = append(got, j)
 		}
 	}()
 
 	producer.Produce("foo", "bar")
 	close(channel)
+	wg.Wait()
 
-	<-done
-
-	// assertions
 	expected := []string{
 		"foo-bar",
 		"bar-foo",
@@ -58,11 +52,10 @@ func TestProduceCandidateNamesToChannel(t *testing.T) {
 
 func TestFindCandidates(t *testing.T) {
 	channel := make(chan string)
-	done := make(chan bool)
 
-	producer, err := NewProducer("testdata/suffixlist.txt", channel, done)
+	producer, err := NewProducer("testdata/suffixlist.txt", channel)
 	if err != nil {
-		t.Errorf("could not initialize Producer")
+		t.Fatalf("could not initialize Producer: %v", err)
 	}
 
 	producer.delimiters = []string{"."}

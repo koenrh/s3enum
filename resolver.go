@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -45,7 +46,7 @@ func (s Stats) Summary() string {
 }
 
 type Resolver interface {
-	IsBucket(string) bool
+	IsBucket(ctx context.Context, name string) bool
 	Stats() Stats
 }
 
@@ -90,10 +91,10 @@ func (s *DNSResolver) Stats() Stats {
 }
 
 // IsBucket determines whether this prefix is a valid S3 bucket name.
-func (s *DNSResolver) IsBucket(name string) bool {
+func (s *DNSResolver) IsBucket(ctx context.Context, name string) bool {
 	atomic.AddUint64(&s.checked, 1)
 
-	records, err := s.resolveName(fmt.Sprintf("%s.%s", name, s3GlobalSuffix))
+	records, err := s.resolveName(ctx, fmt.Sprintf("%s.%s", name, s3GlobalSuffix))
 
 	if err != nil {
 		atomic.AddUint64(&s.errors, 1)
@@ -136,16 +137,14 @@ func (s *DNSResolver) classifyError(err error) {
 
 func getConfig(nameserver string) (*dns.ClientConfig, error) {
 	if nameserver != "" {
-		h, p := parseHostAndPort(nameserver)
-
+		host, port := parseHostPort(nameserver)
 		return &dns.ClientConfig{
-			Servers: []string{h},
-			Port:    strconv.Itoa(p),
+			Servers: []string{host},
+			Port:    port,
 		}, nil
 	}
 
 	config, err := dns.ClientConfigFromFile("/etc/resolv.conf")
-
 	if err != nil {
 		return nil, errors.New("could not read local resolver config")
 	}
@@ -153,21 +152,12 @@ func getConfig(nameserver string) (*dns.ClientConfig, error) {
 	return config, nil
 }
 
-func parseHostAndPort(addr string) (host string, port int) {
-	if p := strings.Split(addr, ":"); len(p) == 2 {
-		host = p[0]
-		var err error
-		if port, err = strconv.Atoi(p[1]); err != nil {
-			port = defaultPort
-		}
-	} else {
-		host = addr
+func parseHostPort(addr string) (host, port string) {
+	h, p, err := net.SplitHostPort(addr)
+	if err != nil {
+		return addr, strconv.Itoa(defaultPort)
 	}
-
-	if port == 0 {
-		port = defaultPort
-	}
-	return
+	return h, p
 }
 
 func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
@@ -185,7 +175,11 @@ func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
 			break
 		}
 		if attempt != retries {
-			time.Sleep(1 * delay)
+			select {
+			case <-time.After(delay):
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			}
 			delay *= 2
 		}
 	}
@@ -194,10 +188,9 @@ func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
 		return nil, err
 	}
 
-	var answer = r.Answer
-	if len(answer) == 0 {
-		return []dns.RR{}, errors.New("empty answer")
+	if len(r.Answer) == 0 {
+		return nil, errors.New("empty answer")
 	}
 
-	return answer, nil
+	return r.Answer, nil
 }

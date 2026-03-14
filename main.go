@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"sync"
 	"time"
 )
 
@@ -12,7 +15,7 @@ const version = "1.0.0"
 func main() {
 	wordListPtr := flag.String("wordlist", "", "Path to word list")
 	suffixListPtr := flag.String("suffixlist", "", "Path to suffix list")
-	threadsPtr := flag.Int("threads", 5, "Number of threads")
+	threadsPtr := flag.Int("threads", 50, "Number of concurrent workers")
 	nameServerPtr := flag.String("nameserver", "", "Custom name server")
 	versionPtr := flag.Bool("version", false, "Print version")
 
@@ -23,7 +26,7 @@ func main() {
 		return
 	}
 
-	var names = flag.Args()
+	names := flag.Args()
 
 	if *suffixListPtr == "" || *wordListPtr == "" || len(names) == 0 {
 		fmt.Println("s3enum -wordlist wordlist.txt -suffixlist suffixlistt.txt [-threads 5] [-nameserver 1.1.1.1] <name>...")
@@ -31,41 +34,49 @@ func main() {
 		os.Exit(1)
 	}
 
-	wordChannel := make(chan string)
-	wordDone := make(chan bool)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
 
+	wordChannel := make(chan string, 1000)
 	resultChannel := make(chan string)
-	resultDone := make(chan bool)
 
 	resolver, err := NewDNSResolver(*nameServerPtr)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize DNS resolver: %v\n", err)
+		fmt.Fprintf(os.Stderr, "could not initialize DNS resolver: %v\n", err)
 		os.Exit(1)
 	}
 
 	start := time.Now()
-	consumer := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
 
+	var workerWg sync.WaitGroup
 	for i := 0; i < *threadsPtr; i++ {
-		go consumer.Consume()
+		workerWg.Add(1)
+		go func() {
+			defer workerWg.Done()
+			consume(ctx, resolver, wordChannel, resultChannel)
+		}()
 	}
 
-	printer := NewPrinter(resultChannel, resultDone, os.Stdout)
-	go printer.PrintBuckets()
+	var printerWg sync.WaitGroup
+	printerWg.Add(1)
+	go func() {
+		defer printerWg.Done()
+		printResults(resultChannel, os.Stdout)
+	}()
 
-	producer, err := NewProducer(*suffixListPtr, wordChannel, resultDone)
+	producer, err := NewProducer(*suffixListPtr, wordChannel)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not initialize Producer: %v\n", err)
+		fmt.Fprintf(os.Stderr, "could not initialize producer: %v\n", err)
 		os.Exit(1)
 	}
 
-	producer.ProduceWordList(names, *wordListPtr)
+	if err := producer.ProduceWordList(ctx, names, *wordListPtr); err != nil {
+		fmt.Fprintf(os.Stderr, "error producing word list: %v\n", err)
+	}
 
-	// NOTE: producer closes their own channel
-	<-wordDone
-
+	workerWg.Wait()
 	close(resultChannel)
-	<-resultDone
+	printerWg.Wait()
 
 	stats := resolver.Stats()
 	stats.Duration = time.Since(start)

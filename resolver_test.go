@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net"
 	"sync"
 	"testing"
@@ -76,7 +77,9 @@ func TestExistingBucket(t *testing.T) {
 	defer s.Shutdown()
 
 	resolver, err := NewDNSResolver(addrstr)
-	isBucket := resolver.IsBucket("test")
+	if err != nil {
+		t.Fatalf("unable to create resolver: %v", err)
+	}
 
 	if !isBucket {
 		t.Fatal("'test' is an existing buckets")

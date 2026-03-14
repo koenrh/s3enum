@@ -1,18 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"testing"
 )
 
-func NewTestResolver() *TestResolver {
-	return &TestResolver{}
-}
-
 type TestResolver struct{}
 
-func (s *TestResolver) IsBucket(name string) bool {
+func (s *TestResolver) IsBucket(_ context.Context, name string) bool {
 	return strings.Contains(name, "s3")
 }
 
@@ -21,48 +19,37 @@ func (s *TestResolver) Stats() Stats {
 }
 
 func TestConsume(t *testing.T) {
-	inputChannel := make(chan string)
-	resultChannel := make(chan string)
-	done2 := make(chan bool)
+	input := make(chan string)
+	results := make(chan string)
 
-	done3 := make(chan bool)
-
-	resolver := NewTestResolver()
-	consumer := NewConsumer(resolver, inputChannel, resultChannel, done2)
-
-	go consumer.Consume()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		consume(context.Background(), &TestResolver{}, input, results)
+	}()
 
 	var got []string
-
-	// consumer
+	var collectWg sync.WaitGroup
+	collectWg.Add(1)
 	go func() {
-		for {
-			j, more := <-resultChannel
-			if more {
-				got = append(got, j)
-			} else {
-				done3 <- true
-				return
-			}
+		defer collectWg.Done()
+		for j := range results {
+			got = append(got, j)
 		}
 	}()
 
-	// producer
 	for k := 1; k <= 5; k++ {
-		inputChannel <- fmt.Sprintf("test%v", k)
+		input <- fmt.Sprintf("test%v", k)
 	}
-	inputChannel <- "foos3"
-	inputChannel <- "foos3asdf"
+	input <- "foos3"
+	input <- "foos3asdf"
 
-	close(inputChannel)
+	close(input)
+	wg.Wait()
+	close(results)
+	collectWg.Wait()
 
-	<-done2
-
-	close(resultChannel)
-	// block
-	<-done3
-
-	// assertions
 	expected := []string{"foos3", "foos3asdf"}
 
 	if len(expected) != len(got) {
