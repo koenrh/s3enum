@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+## v2.0.0
+
+### Breaking changes
+
+- Renamed `-threads` flag to `-workers`
+
+### Added
+
+- DNS connection pooling for improved throughput
+- Retry with exponential backoff on DNS failures
+- Run summary printed to stderr on completion
+
+### Changed
+
+- Increased default number of workers from 10 to 50
+- Bumped [github.com/miekg/dns](https://github.com/miekg/dns) to v1.1.65
+
+### Fixed
+
+- Fixed nil pointer panic in DNS resolver [\#55](https://github.com/koenrh/s3enum/issues/55)
+
 ## v1.0.0
 
 - Replaced the unmaintained [docopt](https://github.com/docopt/docopt.go) package
