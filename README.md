@@ -41,11 +41,12 @@ By default, `s3enum` will use the name server as specified in `/etc/resolv.conf`
 Alternatively, you could specify a different name server using the `-nameserver`
 option. Besides, you could test multiple names at the same time.
 
-```
+```console
 s3enum \
   -wordlist examples/wordlist.txt \
   -suffixlist examples/suffixlist.txt \
   -nameserver 1.1.1.1 \
+  -workers 100 \
   hackerone h1 roflcopter
 ```
 

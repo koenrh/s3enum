@@ -16,7 +16,7 @@ const version = "1.1.0"
 func main() {
 	wordListPtr := flag.String("wordlist", "", "Path to word list")
 	suffixListPtr := flag.String("suffixlist", "", "Path to suffix list")
-	threadsPtr := flag.Int("threads", 50, "Number of concurrent workers")
+	workersPtr := flag.Int("workers", 50, "Number of concurrent workers")
 	nameServerPtr := flag.String("nameserver", "", "Custom name server")
 	versionPtr := flag.Bool("version", false, "Print version")
 
@@ -30,7 +30,7 @@ func main() {
 	names := flag.Args()
 
 	if *suffixListPtr == "" || *wordListPtr == "" || len(names) == 0 {
-		fmt.Println("s3enum -wordlist wordlist.txt -suffixlist suffixlistt.txt [-threads 5] [-nameserver 1.1.1.1] <name>...")
+		fmt.Println("s3enum -wordlist wordlist.txt -suffixlist suffixlist.txt [-workers 50] [-nameserver 1.1.1.1] <name>...")
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -50,7 +50,7 @@ func main() {
 	start := time.Now()
 
 	var workerWg sync.WaitGroup
-	for i := 0; i < *threadsPtr; i++ {
+	for i := 0; i < *workersPtr; i++ {
 		workerWg.Add(1)
 		go func() {
 			defer workerWg.Done()
