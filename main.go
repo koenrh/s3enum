@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"sync"
@@ -81,4 +82,21 @@ func main() {
 	stats := resolver.Stats()
 	stats.Duration = time.Since(start)
 	fmt.Fprintf(os.Stderr, "\n%s\n", stats.Summary())
+}
+
+func consume(ctx context.Context, resolver Resolver, input <-chan string, results chan<- string) {
+	for name := range input {
+		if ctx.Err() != nil {
+			return
+		}
+		if resolver.IsBucket(ctx, name) {
+			results <- name
+		}
+	}
+}
+
+func printResults(results <-chan string, w io.Writer) {
+	for bucket := range results {
+		fmt.Fprintln(w, bucket)
+	}
 }
