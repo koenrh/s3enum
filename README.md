@@ -8,7 +8,7 @@ It was originally built back in 2016 to [target GitHub](https://koen.io/2016/02/
 ## Installation
 
 ```console
-go install github.com/koenrh/s3enum@v1
+go install github.com/koenrh/s3enum@latest
 ```
 
 ## Usage
