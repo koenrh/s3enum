@@ -16,6 +16,10 @@ func (s *TestResolver) IsBucket(name string) bool {
 	return strings.Contains(name, "s3")
 }
 
+func (s *TestResolver) Stats() Stats {
+	return Stats{}
+}
+
 func TestConsume(t *testing.T) {
 	inputChannel := make(chan string)
 	resultChannel := make(chan string)
