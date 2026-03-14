@@ -118,6 +118,10 @@ func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
 		}
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
 	var answer = r.Answer
 	if len(answer) == 0 {
 		return []dns.RR{}, errors.New("empty answer")
