@@ -67,10 +67,9 @@ func RunLocalUDPServer(laddr string) (*dns.Server, string, chan error, error) {
 
 func TestExistingBucket(t *testing.T) {
 	dns.HandleFunc("test.s3.amazonaws.com.", S3DNSServer)
-	defer dns.HandleRemove("test.s3.amazonnaws.com.")
+	defer dns.HandleRemove("test.s3.amazonaws.com.")
 
 	s, addrstr, _, err := RunLocalUDPServer("127.0.0.1:0")
-
 	if err != nil {
 		t.Fatalf("unable to run test server: %v", err)
 	}
@@ -88,10 +87,9 @@ func TestExistingBucket(t *testing.T) {
 
 func TestNonExistingBucket(t *testing.T) {
 	dns.HandleFunc("testnonexistingbucket.s3.amazonaws.com.", S3DNSServer)
-	defer dns.HandleRemove("testnonexistingbucket.s3.amazonnaws.com.")
+	defer dns.HandleRemove("testnonexistingbucket.s3.amazonaws.com.")
 
 	s, addrstr, _, err := RunLocalUDPServer("127.0.0.1:0")
-
 	if err != nil {
 		t.Fatalf("unable to run test server: %v", err)
 	}
