@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Validate that specified number of workers is positive
+- Print usage message to stderr instead of stdout
+- Remove duplicate candidate generation logic
+- Exclude context cancellation from error stats
+- Remove redundant context check in producer loop
+
 ## v1.1.0
 
 ### Added
