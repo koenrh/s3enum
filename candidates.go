@@ -44,9 +44,6 @@ func (p *Producer) ProduceWordList(ctx context.Context, names []string, list str
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
 		line := scanner.Text()
 		for _, n := range names {
 			if !p.Produce(ctx, n, line) {

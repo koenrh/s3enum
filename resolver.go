@@ -116,6 +116,9 @@ func (s *DNSResolver) IsBucket(ctx context.Context, name string) bool {
 	records, err := s.resolveName(ctx, fmt.Sprintf("%s.%s", name, s3GlobalSuffix))
 
 	if err != nil {
+		if ctx.Err() != nil {
+			return false
+		}
 		atomic.AddUint64(&s.errors, 1)
 		s.classifyError(err)
 		return false
