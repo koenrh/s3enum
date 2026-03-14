@@ -81,8 +81,8 @@ func TestExistingBucket(t *testing.T) {
 		t.Fatalf("unable to create resolver: %v", err)
 	}
 
-	if !isBucket {
-		t.Fatal("'test' is an existing buckets")
+	if !resolver.IsBucket(context.Background(), "test") {
+		t.Fatal("'test' should be an existing bucket")
 	}
 }
 
@@ -98,9 +98,11 @@ func TestNonExistingBucket(t *testing.T) {
 	defer s.Shutdown()
 
 	resolver, err := NewDNSResolver(addrstr)
+	if err != nil {
+		t.Fatalf("unable to create resolver: %v", err)
+	}
 
-	isBucket := resolver.IsBucket("testnonexistingbucket")
-	if isBucket != false {
-		t.Fatal("'testnonexistingbucket' is not a bucket")
+	if resolver.IsBucket(context.Background(), "testnonexistingbucket") {
+		t.Fatal("'testnonexistingbucket' should not be a bucket")
 	}
 }

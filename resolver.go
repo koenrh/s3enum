@@ -52,7 +52,8 @@ type Resolver interface {
 
 type DNSResolver struct {
 	client   dns.Client
-	config   dns.ClientConfig
+	addr     string
+	connPool chan *dns.Conn
 	checked  uint64
 	found    uint64
 	errors   uint64
@@ -60,18 +61,36 @@ type DNSResolver struct {
 	refused  uint64
 }
 
-// NewS3Resolver initializes a new S3Resolver
 func NewDNSResolver(nsAddr string) (*DNSResolver, error) {
 	config, err := getConfig(nsAddr)
-
 	if err != nil {
 		return nil, err
 	}
 
+	addr := net.JoinHostPort(config.Servers[0], config.Port)
+
 	return &DNSResolver{
-		client: dns.Client{ReadTimeout: 2 * time.Second},
-		config: *config,
+		client:   dns.Client{ReadTimeout: 2 * time.Second},
+		addr:     addr,
+		connPool: make(chan *dns.Conn, 128),
 	}, nil
+}
+
+func (s *DNSResolver) getConn() (*dns.Conn, error) {
+	select {
+	case conn := <-s.connPool:
+		return conn, nil
+	default:
+		return s.client.Dial(s.addr)
+	}
+}
+
+func (s *DNSResolver) putConn(conn *dns.Conn) {
+	select {
+	case s.connPool <- conn:
+	default:
+		conn.Close()
+	}
 }
 
 const (
@@ -160,20 +179,31 @@ func parseHostPort(addr string) (host, port string) {
 	return h, p
 }
 
-func (s *DNSResolver) resolveName(name string) ([]dns.RR, error) {
+func (s *DNSResolver) resolveName(ctx context.Context, name string) ([]dns.RR, error) {
 	msg := dns.Msg{}
 	msg.SetQuestion(name, dns.TypeCNAME)
-	addr := net.JoinHostPort(s.config.Servers[0], s.config.Port)
 	retries := 3
 	delay := 1 * time.Second
 
 	var err error
 	var r *dns.Msg
 	for attempt := 1; attempt <= retries; attempt++ {
-		r, _, err = s.client.Exchange(&msg, addr)
-		if err == nil {
-			break
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
 		}
+
+		conn, dialErr := s.getConn()
+		if dialErr != nil {
+			err = dialErr
+		} else {
+			r, _, err = s.client.ExchangeWithConn(&msg, conn)
+			if err == nil {
+				s.putConn(conn)
+				break
+			}
+			conn.Close()
+		}
+
 		if attempt != retries {
 			select {
 			case <-time.After(delay):
