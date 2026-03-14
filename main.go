@@ -90,7 +90,11 @@ func consume(ctx context.Context, resolver Resolver, input <-chan string, result
 			return
 		}
 		if resolver.IsBucket(ctx, name) {
-			results <- name
+			select {
+			case results <- name:
+			case <-ctx.Done():
+				return
+			}
 		}
 	}
 }

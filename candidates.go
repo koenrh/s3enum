@@ -30,7 +30,9 @@ func (p *Producer) ProduceWordList(ctx context.Context, names []string, list str
 	defer close(p.channel)
 
 	for _, n := range names {
-		p.channel <- n
+		if !p.send(ctx, n) {
+			return ctx.Err()
+		}
 	}
 
 	file, err := os.Open(list)
@@ -47,27 +49,44 @@ func (p *Producer) ProduceWordList(ctx context.Context, names []string, list str
 		}
 		line := scanner.Text()
 		for _, n := range names {
-			p.Produce(n, line)
+			if !p.Produce(ctx, n, line) {
+				return ctx.Err()
+			}
 		}
 	}
 
 	return scanner.Err()
 }
 
-func (p *Producer) Produce(name, word string) {
+// Produce generates all candidate bucket names for a given name and word
+// combination. Returns false if the context was cancelled.
+func (p *Producer) Produce(ctx context.Context, name, word string) bool {
 	for _, del := range p.delimiters {
 		cand1 := name + del + word
 		cand2 := word + del + name
 
-		p.channel <- cand1
-		p.channel <- cand2
+		if !p.send(ctx, cand1) || !p.send(ctx, cand2) {
+			return false
+		}
 
 		for _, affix := range p.preAndSuffixes {
-			p.channel <- cand1 + del + affix
-			p.channel <- affix + del + cand1
-			p.channel <- cand2 + del + affix
-			p.channel <- affix + del + cand2
+			if !p.send(ctx, cand1+del+affix) ||
+				!p.send(ctx, affix+del+cand1) ||
+				!p.send(ctx, cand2+del+affix) ||
+				!p.send(ctx, affix+del+cand2) {
+				return false
+			}
 		}
+	}
+	return true
+}
+
+func (p *Producer) send(ctx context.Context, candidate string) bool {
+	select {
+	case p.channel <- candidate:
+		return true
+	case <-ctx.Done():
+		return false
 	}
 }
 

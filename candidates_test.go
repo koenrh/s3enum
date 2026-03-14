@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"sync"
 	"testing"
 )
@@ -26,7 +27,7 @@ func TestProduceCandidateNamesToChannel(t *testing.T) {
 		}
 	}()
 
-	producer.Produce("foo", "bar")
+	producer.Produce(context.Background(), "foo", "bar")
 	close(channel)
 	wg.Wait()
 
