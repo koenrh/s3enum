@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const version = "2.0.0"
+const version = "2.0.1"
 
 func main() {
 	wordListPtr := flag.String("wordlist", "", "Path to word list")

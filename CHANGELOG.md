@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## v2.0.1
+
+- Bumped golang.org/x/net to v0.52.0 to fix build failure with Go 1.25
+
 ## v2.0.0
 
 ### Breaking changes
