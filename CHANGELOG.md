@@ -2,15 +2,7 @@
 
 ## Unreleased
 
-## v2.0.1
-
-- Bumped golang.org/x/net to v0.52.0 to fix build failure with Go 1.25
-
-## v2.0.0
-
-### Breaking changes
-
-- Renamed `-threads` flag to `-workers`
+## v1.1.0
 
 ### Added
 
@@ -20,12 +12,16 @@
 
 ### Changed
 
+- Renamed `-threads` flag to `-workers`
 - Increased default number of workers from 10 to 50
 - Bumped [github.com/miekg/dns](https://github.com/miekg/dns) to v1.1.65
+- Bumped golang.org/x/net to v0.52.0
 
 ### Fixed
 
-- Fixed nil pointer panic in DNS resolver [\#55](https://github.com/koenrh/s3enum/issues/55)
+- Fixed nil pointer panic in DNS resolver
+  [\#55](https://github.com/koenrh/s3enum/issues/55)
+- Fixed graceful shutdown on interrupt
 
 ## v1.0.0
 
