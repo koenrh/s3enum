@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 )
 
 const version = "1.0.0"
@@ -42,6 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	start := time.Now()
 	consumer := NewConsumer(resolver, wordChannel, resultChannel, wordDone)
 
 	for i := 0; i < *threadsPtr; i++ {
@@ -64,4 +66,8 @@ func main() {
 
 	close(resultChannel)
 	<-resultDone
+
+	stats := resolver.Stats()
+	stats.Duration = time.Since(start)
+	fmt.Fprintf(os.Stderr, "\n%s\n", stats.Summary())
 }
