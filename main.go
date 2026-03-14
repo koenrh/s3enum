@@ -35,6 +35,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if *workersPtr <= 0 {
+		fmt.Fprintln(os.Stderr, "workers must be a positive number")
+		os.Exit(1)
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
