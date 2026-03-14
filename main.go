@@ -30,7 +30,7 @@ func main() {
 	names := flag.Args()
 
 	if *suffixListPtr == "" || *wordListPtr == "" || len(names) == 0 {
-		fmt.Println("s3enum -wordlist wordlist.txt -suffixlist suffixlist.txt [-workers 50] [-nameserver 1.1.1.1] <name>...")
+		fmt.Fprintln(os.Stderr, "s3enum -wordlist wordlist.txt -suffixlist suffixlist.txt [-workers 50] [-nameserver 1.1.1.1] <name>...")
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
