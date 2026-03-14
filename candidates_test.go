@@ -61,6 +61,21 @@ func TestFindCandidates(t *testing.T) {
 
 	producer.delimiters = []string{"."}
 
+	var got []string
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for j := range channel {
+			got = append(got, j)
+		}
+	}()
+
+	producer.Produce(context.Background(), "x", "y")
+	close(channel)
+	wg.Wait()
+
 	expected := []string{
 		"x.y",
 		"y.x",
@@ -69,8 +84,6 @@ func TestFindCandidates(t *testing.T) {
 		"y.x.baz",
 		"baz.y.x",
 	}
-
-	got := producer.PrepareCandidateBucketNames("x", "y")
 
 	if len(expected) != len(got) {
 		t.Fatalf("expected %v, got %v", expected, got)

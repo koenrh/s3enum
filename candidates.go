@@ -90,29 +90,6 @@ func (p *Producer) send(ctx context.Context, candidate string) bool {
 	}
 }
 
-// PrepareCandidateBucketNames creates all candidate pairs.
-func (p *Producer) PrepareCandidateBucketNames(name, word string) []string {
-	perDelimiter := 2 + 4*len(p.preAndSuffixes)
-	result := make([]string, 0, len(p.delimiters)*perDelimiter)
-
-	for _, del := range p.delimiters {
-		cand1 := name + del + word
-		cand2 := word + del + name
-
-		result = append(result, cand1)
-		result = append(result, cand2)
-
-		for _, affix := range p.preAndSuffixes {
-			result = append(result, cand1+del+affix)
-			result = append(result, affix+del+cand1)
-			result = append(result, cand2+del+affix)
-			result = append(result, affix+del+cand2)
-		}
-	}
-
-	return result
-}
-
 func readFile(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
